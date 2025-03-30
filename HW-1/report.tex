@@ -1,0 +1,73 @@
+\documentclass[a4paper,12pt]{article}
+
+% Packages
+\usepackage[T1]{fontenc}     % Font encoding
+\usepackage{lmodern}         % Modern font
+\usepackage{geometry}        % Page layout
+\geometry{margin=1in}        % 1-inch margins
+\usepackage{amsmath, amssymb} % Math symbols
+\usepackage{booktabs}        % Better tables
+
+% Title Page
+\title{\textbf{Report HW1}}
+
+\author{
+    \begin{tabular}{cc}
+        Simone De Carli & Damiano Salvaterra \\
+        {\small \texttt{simone.decarli@studenti.unitn.it}} & {\small \texttt{damiano.salvaterra@studenti.unitn.it}}
+    \end{tabular}
+}
+
+
+\begin{document}
+
+\maketitle
+
+\newcommand{\E}[1]{\operatorname{E}\left[#1\right]}
+\newcommand{\Var}[1]{\operatorname{Var}\left[#1\right]}
+
+\section{Exercise 1}
+
+Gaussians:\\
+
+\begin{tabular}{c|cc|c}
+    \hline
+    \textbf{N°} & \textbf{Mean} & \textbf{Variance} & \textbf{Probability} \\
+    \hline
+    1 & -2 & 2 & 0.15 \\
+    2 & 4 & 1 & 0.25 \\
+    3 & 10 & 3 & 0.35 \\
+    4 & 15 & 2 & 0.25 \\
+    \hline
+\end{tabular}
+
+Let $X$ be the random variable representing the drawn number from one of the four Gaussians. Let $Y$ be the random variable representing the Gaussian from which the number is drawn.
+
+\begin{equation*}
+\begin{split}
+\E{X} & = \E{X|Y=1}P(Y=1) + \E{X|Y=2}P(Y=2) + \E{X|Y=3}P(Y=3) + \E{X|Y=4}P(Y=4) \\
+& = -2 \cdot 0.15 + 4 \cdot 0.25 + 10 \cdot 0.35 + 15 \cdot 0.25 \\
+& = -0.3 + 1 + 3.5 + 3.75 \\
+& = 7.95
+\end{split}
+\end{equation*}
+
+\begin{equation*}
+\begin{split}
+\Var{X} & = \E{\Var{X|Y}} + \Var{\E{X|Y}} \\
+& = \sigma^2_1 \cdot P(Y=1) + \sigma^2_2 \cdot P(Y=2) + \sigma^2_3 \cdot P(Y=3) + \sigma^2_4 \cdot P(Y=4) \\
+& + \E{\E{X|Y}^2} - \E{X}^2 \\
+& = 2 \cdot 0.15 + 1 \cdot 0.25 + 3 \cdot 0.35 + 2 \cdot 0.25 \\
+& + 0.15 \cdot {(-2)}^2 + 0.25 \cdot 4^2 + 0.35 \cdot 10^2 + 0.25 \cdot 15^2 \\
+& - 7.95^2 \\
+& = 0.3 + 0.25 + 1.05 + 0.5 \\
+& + 0.6 + 4 + 35 + 56.25 \\
+& - 63.2025 \\
+& = 2.1 + 95.85 - 63.2025 \\
+& = 34.7475
+\end{split}
+\end{equation*}
+
+
+
+\end{document}
