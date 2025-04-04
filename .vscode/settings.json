@@ -1,0 +1,44 @@
+{
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "Compile Normal",
+            "tools": [
+                "pdflatex-normal"
+            ]
+        },
+        {
+            "name": "Compile Anonymous",
+            "tools": [
+                "pdflatex-anonymous"
+            ]
+        },
+        {
+            "name": "Compile Both",
+            "tools": [
+                "pdflatex-normal",
+                "pdflatex-anonymous"
+            ]
+        }
+    ],
+    "latex-workshop.latex.tools": [
+        {
+            "name": "pdflatex-normal",
+            "command": "pdflatex",
+            "args": [
+                "-interaction=nonstopmode",
+                "-synctex=1",
+                "%DOC%"
+            ]
+        },
+        {
+            "name": "pdflatex-anonymous",
+            "command": "pdflatex",
+            "args": [
+                "-interaction=nonstopmode",
+                "-synctex=1",
+                "-jobname=anonymous_%DOCFILE%",
+                "\\def\\anonymoustrue{} \\input{%DOC%}"
+            ]
+        }
+    ]
+}
