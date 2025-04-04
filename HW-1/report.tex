@@ -54,7 +54,7 @@
 
 \section*{Introduction}
 
-We conducted the following exercises with \(10^7\) samples for each experiment.
+We conducted the following exercises with \(10^6\) samples for each experiment.
 
 We also used 5 different RNGs: (\texttt{MT19937}, \texttt{PCG64}, \texttt{PCG64DXSM}, \texttt{Philox}, \texttt{SFC64}) provided by the \texttt{numpy} library.
 
@@ -137,8 +137,6 @@ Thus, the final expression is:
 \begin{equation}
   \boxed{P(X > Y) = \frac{e^{-\lambda a} - e^{-\lambda b}}{\lambda (b-a)}.}
 \end{equation}
-
-Setting \(\lambda=1\), \(a=0\), and \(b=5\), we have:
 
 \begin{equation}
   P(X > Y) = \frac{1 - e^{-5}}{5} \approx 0.1987. \qquad \text{ for } \lambda=1, a=0, b=5
