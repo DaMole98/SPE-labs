@@ -12,6 +12,14 @@
 \usepackage{setspace}        % Adjust line spacing
 \usepackage{titling}         % Customize title format
 \usepackage{float}          % For figure placement
+\usepackage{etoolbox} % Required for patching existing commands
+
+\renewenvironment{equation}
+{\setlength{\mathindent}{0cm}%
+  \begin{equation*}%
+  }
+  {
+\end{equation*}}
 
 % Reduce overall line spacing (adjust the factor as needed)
 \setstretch{0.9}
@@ -70,25 +78,24 @@ We also used 5 different RNGs: (\texttt{MT19937}, \texttt{PCG64}, \texttt{PCG64D
 Let \(X\) be the random variable representing the drawn number from one of the four Gaussians, and let \(Y\) be the random variable representing the Gaussian from which the number is drawn.
 
 The expectation of \(X\) can be calculated as follows:
-{\setlength{\mathindent}{0cm}
-  \begin{equation*}
-    \begin{split}
-      \E{X} &= \E{X \mid Y=1}P(Y=1) + \E{X \mid Y=2}P(Y=2)\\
-      &\quad + \E{X \mid Y=3}P(Y=3) + \E{X \mid Y=4}P(Y=4) \\
-      &= 7.95.\\
-    \end{split}
-\end{equation*}}
+
+\begin{equation}
+  \begin{split}
+    \E{X} &= \E{X \mid Y=1}P(Y=1) + \E{X \mid Y=2}P(Y=2)\\
+    &\quad + \E{X \mid Y=3}P(Y=3) + \E{X \mid Y=4}P(Y=4) \\
+    &= 7.95.\\
+  \end{split}
+\end{equation}
 
 The variance of \(X\) can be calculated as follows:
-{\setlength{\mathindent}{0cm}
-  \begin{equation*}
-    \begin{split}
-      \Var{X} &= \E{\Var{X \mid Y}} + \Var{\E{X \mid Y}} \\
-      &= \sigma^2_1 \cdot P(Y=1) + \sigma^2_2 \cdot P(Y=2) + \sigma^2_3 \cdot P(Y=3) + \sigma^2_4 \cdot P(Y=4) \\
-      &\quad + \E{\E{X \mid Y}^2} - \E{X}^2 \\
-      &= 34.7475.
-    \end{split}
-\end{equation*}}
+\begin{equation}
+  \begin{split}
+    \Var{X} &= \E{\Var{X \mid Y}} + \Var{\E{X \mid Y}} \\
+    &= \sigma^2_1 \cdot P(Y=1) + \sigma^2_2 \cdot P(Y=2) + \sigma^2_3 \cdot P(Y=3) + \sigma^2_4 \cdot P(Y=4) \\
+    &\quad + \E{\E{X \mid Y}^2} - \E{X}^2 \\
+    &= 34.7475.
+  \end{split}
+\end{equation}
 
 \begin{figure}[H]
   \centering
@@ -98,46 +105,44 @@ The variance of \(X\) can be calculated as follows:
 
 \section*{Exercise 2}
 
-Let \(X \sim \operatorname{Exp}(\lambda)\) and \(Y \sim U(a,b)\). We wish to calculate the probability:
-\[
-  P(X > Y).
-\]
+Let \(X \sim \operatorname{Exp}(\lambda)\) and \(Y \sim U(a,b)\). We wish to calculate the probability: $P(X > Y)$.\\
 
 Since \(X\) and \(Y\) are independent, we can write:
-\[
-  P(X > Y) = \int_a^b P(X > y \mid Y = y) f_Y(y) \, dy,
-\]
+
+\begin{equation}
+  P(X > Y) = \int_a^b P(X > y \mid Y = y) f_Y(y) \, dy
+\end{equation}
 where \(f_Y(y)\) is the density of the uniform distribution on \([a,b]\):
-\[
-  f_Y(y) = \frac{1}{b-a}, \quad \text{for } y \in [a,b].
-\]
+
+\begin{equation}
+  f_Y(y) = \frac{1}{b-a}, \qquad \text{for } y \in [a,b]
+\end{equation}
 
 For an exponential random variable \(X\) with parameter \(\lambda\), the survival function is:
-\[
-  P(X > y) = \int_y^\infty \lambda e^{-\lambda x} \, dx = e^{-\lambda y}, \quad \text{for } y \ge 0.
-\]
+
+\begin{equation}
+  P(X > y) = \int_y^\infty \lambda e^{-\lambda x} \, dx = e^{-\lambda y}, \qquad \text{for } y \ge 0
+\end{equation}
 
 Substituting the expression for \(P(X > y)\) into the integral:
-\[
-  P(X > Y) = \frac{1}{b-a} \int_a^b e^{-\lambda y} \, dy.
-\]
-We compute the integral:
-\[
-  \int_a^b e^{-\lambda y} \, dy = \left[ -\frac{1}{\lambda} e^{-\lambda y} \right]_a^b = \frac{1}{\lambda}\left(e^{-\lambda a} - e^{-\lambda b}\right).
-\]
-We finally obtain:
-\[
-  P(X > Y) = \frac{e^{-\lambda a} - e^{-\lambda b}}{\lambda (b-a)}.
-\]
+
+\begin{equation}
+  P(X > Y) = \frac{1}{b-a} \int_a^b e^{-\lambda y} \, dy. =
+  \int_a^b e^{-\lambda y} \, dy = {\left[ -\frac{1}{\lambda} e^{-\lambda y} \right]}_a^b = \frac{1}{\lambda}\left(e^{-\lambda a} - e^{-\lambda b}\right)
+  = \frac{e^{-\lambda a} - e^{-\lambda b}}{\lambda (b-a)}
+\end{equation}
+
 Thus, the final expression is:
-\[
+
+\begin{equation}
   \boxed{P(X > Y) = \frac{e^{-\lambda a} - e^{-\lambda b}}{\lambda (b-a)}.}
-\]
+\end{equation}
 
 Setting \(\lambda=1\), \(a=0\), and \(b=5\), we have:
-\[
-  P(X > Y) = \frac{1 - e^{-5}}{5} \approx 0.1987.
-\]
+
+\begin{equation}
+  P(X > Y) = \frac{1 - e^{-5}}{5} \approx 0.1987. \qquad \text{ for } \lambda=1, a=0, b=5
+\end{equation}
 
 \begin{figure}[h]
   \centering
