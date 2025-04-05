@@ -37,7 +37,7 @@
                 "-interaction=nonstopmode",
                 "-synctex=1",
                 "-jobname=anonymous_%DOCFILE%",
-                "\\def\\anonymoustrue{} \\input{%DOC%}"
+                "\\def\\anonymous{} \\input{%DOC%}"
             ]
         }
     ]

@@ -38,9 +38,8 @@
 
 \title{Report HW1}
 
-\newif\ifanonymous% 
 \author{%
-  \ifanonymous%
+  \ifdefined\anonymous%
   Anonymous Submission
   \else
   \begin{tabular}{cc}
@@ -55,6 +54,7 @@
 
 \maketitle
 
+% Custom expectation and variance commands
 \newcommand{\E}[1]{\operatorname{E}\left[#1\right]}
 \newcommand{\Var}[1]{\operatorname{Var}\left[#1\right]}
 
