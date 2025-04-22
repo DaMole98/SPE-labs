@@ -16,12 +16,14 @@
 \usepackage{setspace}           % Adjust line spacing
 \usepackage{titling}            % Customize title format
 \usepackage{float}              % [H] for figure placement
+\usepackage{color}              % For colored text
 
 
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \renewcommand{\thealgorithm}{\arabic{algorithm}} % Numerazione autonoma
 
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{TODO:} #1}}
 
 % ===== Line spacing =====
 \setstretch{0.9}                % 0.9× spacing; regola a piacere
@@ -59,6 +61,26 @@
 \begin{document}
 
 \maketitle
+
+\section*{Exercise 1}
+
+The simulations were performed by drawing samples from a Poisson process in a fixed time $[0, T]$ with $T=100$ and fixed number of arrivals $N$, then $\lambda = \frac{N}{T}$ follwed.
+
+\subsection*{Part 1}
+
+The first part consisted in drawing $N$ uniformly distributed arrivals in the interval $[0, T]$, computing the inter-arrival verifying their exponential distribution by:
+\begin{itemize}
+  \item computing the empirical mean and variance of the inter-arrival times and comparing them with the theoretical values
+  \item aggregating all the inter-arrival from each process realization and plotting the histogram of the inter-arrival times with the theoretical PDF of the exponential distribution
+  \item plotting the Q-Q plot of the inter-arrival times against the theoretical exponential distribution
+\end{itemize}
+computing and comparing empirical and theoretical metrics like mean and variance, fitting the data to a distribution and plotting the PDF and by plotting the Q-Q plot.
+
+\todo{Add plots, results and comments}
+
+\subsection*{Part 2}
+
+In the second method we generated $N$ exponentially distributed inter-arrival times. This required to check that the sum of $N$ exponentially 
 
 \section*{Exercise 2}
 
