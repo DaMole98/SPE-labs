@@ -45,7 +45,7 @@
 % ===== Metadata =====
 \title{Report HW2}
 \author{%
-  \ifdefined\anonymous
+  \ifdefined\anonymous%
     Anonymous Submission
   \else
     \begin{tabular}{cc}
@@ -60,9 +60,9 @@
 
 \maketitle
 
-\section{Exercise 2}
+\section*{Exercise 2}
 
-\subsection{Rejection Sampling}
+\subsection*{Rejection Sampling}
 To apply the rejection sampling, we need to find a distribution such that we can bound the probability $f_(x)$ such that
 \begin{equation*}
    \frac{f_(x)}{g_(x)} \leq c
@@ -95,7 +95,7 @@ To draw a sample from the distribution $g(x)$ we can apply the CDF-Inversion met
 
 We can now choose 2 ways of applying the rejection sampling, the first with the knowledge of A, which allow us to have an higher acceptance rate, or without knowledge of A, which allow us to know the target distribution up to a constant but it does not let us to bound it so tightly, having a drop in the acceptance rate. We report both methods in the following.
 
-\subsubsection{Algorithm with the full knowledge of $f(x)$}
+\subsubsection*{Algorithm with the full knowledge of $f(x)$}
 In this case we assume to know the value of $A$, so that we know also the value of $c$ from \ref{eq:c}, so we can bound $f(x)$ with the function $cg(x) = \frac{18}{A}\frac{x^2}{18} =\frac{x^2}{A}$ which is basically the envelope of $f(x)$.
 Thus, the algorithm is the one reported in Algorithm \ref{alg:1}.
 
@@ -116,7 +116,7 @@ Thus, the algorithm is the one reported in Algorithm \ref{alg:1}.
 
 The distribution resulting from Algorithm \ref{alg:1} is shown in \ref{fig:rej-sik}. The acceptance rate of this algorithm in $10^8$ iterations is $\frac{10^8}{49155544} \approx 0.49$. The distribution of the drawn samples is shown against the theoretical one in Figure \ref{fig:rej-sik}, while the accepted samples and the rejected samples (from the proposal) are shown in \ref{fig:rs-sik}.
 
-\subsubsection{Algorithm with knowledge of $f(x)$ up to a constant}
+\subsubsection*{Algorithm with knowledge of $f(x)$ up to a constant}
 Given that $f(x) = \frac{1}{A}x^2\sin^2(\pi x)=\frac{1}{A}f^n(x)$, if we do not know the value of A, we can still bound the non-normalized distribution $f^{n}(x)$:
 \begin{equation}
     f^n(x) = x^2\sin^2(\pi x) \leq x^2 \leq 9 = M\quad \text{in}\quad -3\leq x\leq3 
@@ -141,7 +141,7 @@ We can use this upper bound do apply rejection sampling as in Algorithm \ref{alg
 We see that in this algorithm we do not employ $A$ at all, and the proposal distribution is a uniform distribution. We build a "bounding box" around the scaled distribution $f^n(x)$ and accept only those points that fall under the plot of $f^n(x)$. This approach works, but, clearly, being less precise in the bounding, the acceptance rate drops: the acceptance rate on $10^8$ iterations is $\frac{10^8}{16381697} \approx 0.16$. The distribution of the drawn samples is shown against the theoretical one in Figure \ref{fig:rej-nok},, while the accepted samples and the rejected samples (from the proposal) are shown in \ref{fig:rs-nok}.
 
 
-\subsection{Confidence intervals}
+\subsection*{Confidence intervals}
 For the computation of the confidence intervals, since the data are i.i.d., we use the order statistics and the binomial distribution (approximated with a normal, since $n=200$ is large enough) for the CIs of the median and the 0.9-quantile.
 For a quantile $q$, the formula for CI $[X_{(j)},X_{(k)}]$ is (using the normal approximation of the binomial):
 
@@ -161,7 +161,7 @@ The plots of the median and the 0.9-quantile computed with the two different app
 
 The plots for the mean are shown in Figure \ref{fig:mean-CI}.
 
-\subsubsection{Statistical significance of the mean's confidence intervals}
+\subsubsection*{Statistical significance of the mean's confidence intervals}
 
 We subdivided 20000 variates into 100 disjoint sets and for each of them we computed the 95\% confidence intervals, both with the Gaussian approximation approach and the Bootstrap approach. As expected, the number of confidence intervals containing the true mean is 95 in the case of the Gaussian approximation and 94 in the case of the bootstrap CIs (we can see that the bootstrap method slightly understimates the CI, so we find less accurate CIs). Figure \ref{fig:CLT} shows the distribution of the sample mean computed in the 100 sets, showing that the Central Limit Theorem holds over this statistic.
 
