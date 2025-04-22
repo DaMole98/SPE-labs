@@ -1,0 +1,254 @@
+\documentclass[a4paper,12pt]{article}
+
+% ===== Packages =====
+\usepackage[T1]{fontenc}        % Font encoding
+\usepackage{lmodern}
+\usepackage{algorithm}
+\usepackage{subcaption}
+
+% Modern font
+\usepackage[a4paper,margin=1in]{geometry} % Page layout: 1in margin
+\usepackage[fleqn]{amsmath}     % Math symbols, left-aligned equations
+\setlength{\mathindent}{0pt}    % No indent for fleqn
+\usepackage{amssymb}            % Extra math symbols
+\usepackage{booktabs}           % Better tables
+\usepackage{graphicx}           % Include graphics
+\usepackage{setspace}           % Adjust line spacing
+\usepackage{titling}            % Customize title format
+\usepackage{float}              % [H] for figure placement
+
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\thealgorithm}{\arabic{algorithm}} % Numerazione autonoma
+
+
+% ===== Line spacing =====
+\setstretch{0.9}                % 0.9× spacing; regola a piacere
+
+% ===== Title formatting =====
+\pretitle{%
+  \begin{center}\bfseries\Large
+}
+\posttitle{%
+  \end{center}\vspace{-1em}
+}
+\preauthor{%
+  \begin{center}\small
+}
+\postauthor{%
+  \end{center}\vspace{-1em}
+}
+\predate{}  % no date before
+\postdate{} % no date after
+
+% ===== Metadata =====
+\title{Report HW2}
+\author{%
+  \ifdefined\anonymous
+    Anonymous Submission
+  \else
+    \begin{tabular}{cc}
+      Simone De Carli & Damiano Salvaterra \\
+      {\small\texttt{simone.decarli@studenti.unitn.it}} & {\small\texttt{damiano.salvaterra@studenti.unitn.it}}
+    \end{tabular}
+  \fi
+}
+\date{}  % leave date blank
+
+\begin{document}
+
+\maketitle
+
+\section{Exercise 2}
+
+\subsection{Rejection Sampling}
+To apply the rejection sampling, we need to find a distribution such that we can bound the probability $f_(x)$ such that
+\begin{equation*}
+   \frac{f_(x)}{g_(x)} \leq c
+\end{equation*}
+
+A valid proposal distribution can be
+\begin{equation*}
+g(x) = \begin{cases}
+    k \, x^2 \quad \text{if} \quad -3\leq x\leq3 \\
+    0 \quad \text{otherwise}
+    \end{cases} 
+\end{equation*}
+where $k$ is such that $\int_{-3}^{3} g(x) \, dx =1$.
+Such $k$ is given by
+\begin{equation*}
+\int_{-3}^{3} g(x) \, dx =\int_{-3}^{3} kx^2 \, dx =  18k \overset{!}{=} 1 \Rightarrow k = \frac{1}{18}
+\end{equation*}
+
+The proposal distribution is then $g(x) = \frac{x^2}{18}$ and the bound is 
+\begin{equation}
+\label{eq:c}
+    \frac{\frac{1}{A}x^2\sin^2(\pi x)}{\frac{x^2}{18}} = \frac{18}{A}\sin^2(\pi x) \leq c \Rightarrow c = \frac{18}{A} = 2.03435386.
+\end{equation}
+To draw a sample from the distribution $g(x)$ we can apply the CDF-Inversion method, so we derive the inverse of the CDF $G(x)$:
+
+\begin{equation*}
+    G(x) = \int_{-3}^{x}g(t)\,dt = \int_{-3}^{x} \frac{t^2}{18}\,dt = \frac{1}{2}+\frac{x^3}{54}
+    \Rightarrow G^{-1}(u) = 3\sqrt[3]{2(u-\frac{1}{2})} \quad \text{for}\quad u \in [0,1].   
+\end{equation*}
+
+We can now choose 2 ways of applying the rejection sampling, the first with the knowledge of A, which allow us to have an higher acceptance rate, or without knowledge of A, which allow us to know the target distribution up to a constant but it does not let us to bound it so tightly, having a drop in the acceptance rate. We report both methods in the following.
+
+\subsubsection{Algorithm with the full knowledge of $f(x)$}
+In this case we assume to know the value of $A$, so that we know also the value of $c$ from \ref{eq:c}, so we can bound $f(x)$ with the function $cg(x) = \frac{18}{A}\frac{x^2}{18} =\frac{x^2}{A}$ which is basically the envelope of $f(x)$.
+Thus, the algorithm is the one reported in Algorithm \ref{alg:1}.
+
+\begin{algorithm}
+\caption{Rejection sampling with full knowledge of $f(x)$}
+\label{alg:1}
+\begin{algorithmic}[1]
+\STATE Draw $u_1 \sim \mathcal{U}[0,1]$
+\STATE Compute $x = G^{-1}(u_1)$
+\STATE Draw $u_2 \sim \mathcal{U}[0, c \cdot g(x)]$
+\IF{$u_2 < f(x)$}
+    \STATE Accept $x$
+\ELSE
+    \STATE Go back to Step 1
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+The distribution resulting from Algorithm \ref{alg:1} is shown in \ref{fig:rej-sik}. The acceptance rate of this algorithm in $10^8$ iterations is $\frac{10^8}{49155544} \approx 0.49$. The distribution of the drawn samples is shown against the theoretical one in Figure \ref{fig:rej-sik}, while the accepted samples and the rejected samples (from the proposal) are shown in \ref{fig:rs-sik}.
+
+\subsubsection{Algorithm with knowledge of $f(x)$ up to a constant}
+Given that $f(x) = \frac{1}{A}x^2\sin^2(\pi x)=\frac{1}{A}f^n(x)$, if we do not know the value of A, we can still bound the non-normalized distribution $f^{n}(x)$:
+\begin{equation}
+    f^n(x) = x^2\sin^2(\pi x) \leq x^2 \leq 9 = M\quad \text{in}\quad -3\leq x\leq3 
+\end{equation}
+We can use this upper bound do apply rejection sampling as in Algorithm \ref{alg:2}.
+
+\begin{algorithm}
+\caption{Rejection sampling with knowledge of $f(x)$ up to a constant}
+\label{alg:2}
+\begin{algorithmic}[1]
+\STATE Draw $x \sim \mathcal{U}[-3,3]$
+\STATE Draw $u \sim \mathcal{U}[0, M]$
+\IF{$u \leq f^n(x)$}
+    \STATE Accept $x$
+\ELSE
+    \STATE Go back to Step 1
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+
+We see that in this algorithm we do not employ $A$ at all, and the proposal distribution is a uniform distribution. We build a "bounding box" around the scaled distribution $f^n(x)$ and accept only those points that fall under the plot of $f^n(x)$. This approach works, but, clearly, being less precise in the bounding, the acceptance rate drops: the acceptance rate on $10^8$ iterations is $\frac{10^8}{16381697} \approx 0.16$. The distribution of the drawn samples is shown against the theoretical one in Figure \ref{fig:rej-nok},, while the accepted samples and the rejected samples (from the proposal) are shown in \ref{fig:rs-nok}.
+
+
+\subsection{Confidence intervals}
+For the computation of the confidence intervals, since the data are i.i.d., we use the order statistics and the binomial distribution (approximated with a normal, since $n=200$ is large enough) for the CIs of the median and the 0.9-quantile.
+For a quantile $q$, the formula for CI $[X_{(j)},X_{(k)}]$ is (using the normal approximation of the binomial):
+
+\begin{equation*}
+    j \approx \lfloor nq-1.96\sqrt{nq(q-q)} \rfloor, \quad k \approx \lfloor nq+1.96\sqrt{nq(q-q)} \rfloor +1.
+\end{equation*}
+
+Instead, for the mean, we exploit the central limit Theorem (since we have enough data points and the distribution is symmetric) and obtain the confidence interval:
+\begin{equation*}
+    \hat{\mu_n} \pm \eta\frac{s_n}{\sqrt{n}}
+\end{equation*}
+
+
+For the bootstrap procedure, the only assumption is to have i.i.d. data, so we can also apply it.
+
+The plots of the median and the 0.9-quantile computed with the two different approaches are shown in Figure \ref{fig:med-Q}.
+
+The plots for the mean are shown in Figure \ref{fig:mean-CI}.
+
+\subsubsection{Statistical significance of the mean's confidence intervals}
+
+We subdivided 20000 variates into 100 disjoint sets and for each of them we computed the 95\% confidence intervals, both with the Gaussian approximation approach and the Bootstrap approach. As expected, the number of confidence intervals containing the true mean is 95 in the case of the Gaussian approximation and 94 in the case of the bootstrap CIs (we can see that the bootstrap method slightly understimates the CI, so we find less accurate CIs). Figure \ref{fig:CLT} shows the distribution of the sample mean computed in the 100 sets, showing that the Central Limit Theorem holds over this statistic.
+
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{rej-sampl-SIK.png}
+        \caption{Rejection sampling with Algorithm~\ref{alg:1}.}
+        \label{fig:rej-sik}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{rej-sampl-NOK.png}
+        \caption{Rejection sampling with Algorithm~\ref{alg:2}.}
+        \label{fig:rej-nok}
+    \end{subfigure}
+    \label{fig:rej-sampl}
+    \caption{Rejection sampling of $f(x)$}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{rs-acc-rej_SIK.png}
+        \caption{Rejected/accepted samples with Algorithm~\ref{alg:1}.}
+        \label{fig:rs-sik}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{rs-acc-rej_NOK.png}
+        \caption{Rejected/accepted samples with Algorithm~\ref{alg:2}.}
+        \label{fig:rs-nok}
+    \end{subfigure}
+    \label{fig:rej-sampl2}
+    \caption{Accepted/rejected samples distributions.}
+\end{figure}
+
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{med-Q-CI.png}
+        \caption{Median and 0.9-Quantile CIs computed with the Binomial formula.}
+        \label{fig:med-Q-1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{med-Q-Boot-CI.png}
+        \caption{Median and 0.9-Quantile CIs computed with the Bootstrap heuristic.}
+        \label{fig:med-Q-2}
+    \end{subfigure}
+    \label{fig:med-Q}
+    \caption{CDF with median and 0.9-quantile CIs.}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{med-Q-CI.png}
+        \caption{Mean CI computed with the Gaussian approximation.}
+        \label{fig:mean-1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{med-Q-Boot-CI.png}
+        \caption{Mean CI computed with the Bootstrap heuristic.}
+        \label{fig:mean-2}
+    \end{subfigure}
+    \label{fig:mean-CI}
+    \caption{PDF and mean CI.}
+\end{figure}
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{CLT3.png}
+    \caption{Empirical PDF of the sample mean.}
+    \label{fig:CLT}
+\end{figure}
+
+\end{document}
