@@ -17,6 +17,7 @@
 \usepackage{titling}            % Customize title format
 \usepackage{float}              % [H] for figure placement
 \usepackage{color}              % For colored text
+\usepackage{booktabs}           % For better tables
 
 \usepackage{algorithm}
 \usepackage{algorithmic}
@@ -77,8 +78,25 @@ We aggregate the inter-arrival times from all $k$ to assess whether they follow 
   \setlength\itemsep{0.01em}
   \item Plot the histogram of all inter-arrival times across the $k$ realizations, overlaid with the corresponding exponential probability density function (PDF), as shown in Figure~\ref{fig:ex1-p1-combined}.
   \item Construct a Q-Q plot comparing the empirical distribution of inter-arrival times with the theoretical exponential distribution (Figure~\ref{fig:ex1-p1-combined}).
-  \item Compute empirical mean and variance, and compare them to theoretical values.
+  \item Compute empirical mean and variance, and compare them to theoretical values. (Table~\ref{tab:ex1-p1-ci-summary}).
 \end{itemize}
+
+\begin{table}[htbp]
+  \centering
+  \small
+  \begin{tabular}{@{}cc|lcccccc@{}}
+    \toprule
+    $\lambda$ & $k$ & Source & Mean & Var & Mean 95\% CI & Mean 99\% CI & Var 95\% CI & Var 99\% CI \\
+    \midrule
+    100 & $10^3$ & Theoretical & 0.01 & 0.00 & -- & -- & -- & -- \\
+    100 & $10^3$ & Empirical   & 0.01 & 0.00 & [0.01,0.01] & [0.01,0.01] & [0.00,0.00] & [0.00,0.00] \\
+    \midrule
+    0.42 & $10^6$ & Theoretical & 2.38 & 5.67 & -- & -- & -- & -- \\
+    0.42 & $10^6$ & Empirical   & 2.33 & 5.16 & [2.32,2.33] & [2.32,2.33] & [5.13,5.19] & [5.12,5.20] \\
+    \bottomrule
+  \end{tabular}
+  \caption{Summary of inter-arrival time statistics: mean, variance, and confidence intervals for both experimental setups.}\label{tab:ex1-p1-ci-summary}
+\end{table}
 
 \begin{figure}[htbp]
   \centering
@@ -109,6 +127,23 @@ We then analyze the resulting arrival times by:
   \item Generating a Q-Q plot to compare the empirical distribution with the theoretical uniform distribution.
   \item Computing the empirical mean and variance of the aggregated arrival times and assessing their agreement with uniformity assumptions.
 \end{itemize}
+
+\begin{table}[htbp]
+  \centering
+  \small
+  \begin{tabular}{@{}cc|lcccccc@{}}
+    \toprule
+    $\lambda$ & $k$ & Source & Mean & Var & Mean 95\% CI & Mean 99\% CI & Var 95\% CI & Var 99\% CI \\
+    \midrule
+    100 & $10^3$ & Theoretical & 50 & 833.33 & -- & -- & -- & -- \\
+    100 & $10^3$ & Empirical   & 49.62 & 49.62 & [47.91,51.39] & [47.34,52.03] & [774.47,868.09] & [763.75, 883.87] \\
+    \midrule
+    0.42 & $10^6$ & Theoretical & 50 & 833.33 & -- & -- & -- & -- \\
+    0.42 & $10^6$ & Empirical   & 45.14 & 702.51 & [45.09,45.19] & [45.08,45.22] & [701.24,703.87] & [700.68,704.36] \\
+    \bottomrule
+  \end{tabular}
+  \caption{Summary of arrival time statistics: mean, variance, and confidence intervals for both experimental setups.}\label{tab:ex1-p2-ci-summary}
+\end{table}
 
 \begin{figure}[htbp]
   \centering
