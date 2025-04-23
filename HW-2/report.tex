@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt]{article}
+\documentclass[a4paper]{article}
 
 % ===== Packages =====
 \usepackage[T1]{fontenc}        % Font encoding
@@ -7,7 +7,7 @@
 \usepackage{subcaption}
 
 % Modern font
-\usepackage[a4paper,margin=1in]{geometry} % Page layout: 1in margin
+\usepackage[a4paper,margin=0.8in]{geometry} % Page layout: 1in margin
 \usepackage[fleqn]{amsmath}     % Math symbols, left-aligned equations
 \setlength{\mathindent}{0pt}    % No indent for fleqn
 \usepackage{amssymb}            % Extra math symbols
@@ -66,16 +66,18 @@
 \todo{Comment results, especially about tails}\\
 \todo{Add mean and variance CI results}\\
 
-We simulate a Poisson process over a fixed interval $[0, T]$, with $T = 100$. Given a fixed number of arrivals $N$, we set the rate as $\lambda = \frac{N}{T}$.
+We aim to simulate a Poisson process with a fixed number of arrivals $N$. Given the time interval $[0, T]$, with $T = 100$ the rate parameter is set as $\lambda = \frac{N}{T}$.
 
 \subsection*{Part 1: Uniform Arrival Times}
 
-We generate $N$ arrival times uniformly in $[0, T]$, sort them, and compute inter-arrival times. To verify if these are exponentially distributed, we:
+In this experiment, we generate $k$ realizations of $N$ arrival times sampled uniformly over $[0, T]$. Then we sort them to compute the inter-arrival times.
+We aggregate the inter-arrival times from all $k$ to assess whether they follow an exponential distribution. Specifically, we:
 
 \begin{itemize}
+  \setlength\itemsep{0.01em}
+  \item Plot the histogram of all inter-arrival times across the $k$ realizations, overlaid with the corresponding exponential probability density function (PDF), as shown in Figure~\ref{fig:ex1-p1-combined}.
+  \item Construct a Q-Q plot comparing the empirical distribution of inter-arrival times with the theoretical exponential distribution (Figure~\ref{fig:ex1-p1-combined}).
   \item Compute empirical mean and variance, and compare them to theoretical values.
-  \item Plot the histogram of all inter-arrival times over multiple simulations, superimposed with the exponential PDF in Figure~\ref{fig:ex1-p1-combined}.
-  \item Generate a Q-Q plot against the theoretical exponential distribution in Figure~\ref{fig:ex1-p1-combined}.
 \end{itemize}
 
 \begin{figure}[htbp]
@@ -91,19 +93,21 @@ We generate $N$ arrival times uniformly in $[0, T]$, sort them, and compute inte
     \includegraphics[width=\textwidth]{images/ex1-p1-hl.png}
     \caption{$k = 10^3$ and $\lambda = 100$.}\label{fig:ex1-p1-hl}
   \end{subfigure}
-  \caption{Comparison of inter-arrival time histograms and Q-Q plots from uniform distribution sampling under different parameters.}\label{fig:ex1-p1-combined}
+  \caption{Inter-arrival time histograms and Q-Q plots obtained from uniform distribution sampling.}\label{fig:ex1-p1-combined}
 \end{figure}
 
 \subsection*{Part 2: Exponential Inter-Arrivals}
 
-We generate $N$ exponential inter-arrival times with mean $\frac{1}{\lambda}$ and compute arrival times via cumulative sum. Only those realizations in which the total time of the N inter-arrival events does not exceed T are kept.
+In this experiment, we generate $k$ realizations of Poisson processes from $N$ inter-arrival times drawn independently from an exponential distribution with mean $\frac{1}{\lambda}$. Arrival times are obtained via cumulative summation. Only realizations for which the sum of the inter-arrival times does not exceed $T$ are retained.
 
-We then:
+\noindent
+We then analyze the resulting arrival times by:
 
 \begin{itemize}
-  \item Compute and compare empirical mean and variance of arrival times.
-  \item Plot a histogram of arrival times, overlaid with the uniform PDF on $[0, T]$ in Figure~\ref{fig:ex1-p2-combined}.
-  \item Generate a Q-Q plot against the uniform distribution in Figure~\ref{fig:ex1-p2-combined}.
+  \setlength\itemsep{0.01em}
+  \item Plotting their histogram and overlaying the theoretical uniform PDF on $[0, T]$, as illustrated in Figure~\ref{fig:ex1-p2-combined}.
+  \item Generating a Q-Q plot to compare the empirical distribution with the theoretical uniform distribution.
+  \item Computing the empirical mean and variance of the aggregated arrival times and assessing their agreement with uniformity assumptions.
 \end{itemize}
 
 \begin{figure}[htbp]
@@ -119,7 +123,7 @@ We then:
     \includegraphics[width=\textwidth]{images/ex1-p2-hl.png}
     \caption{$k = 10^3$ and $\lambda = 100$.}\label{fig:ex1-p2-hl}
   \end{subfigure}
-  \caption{Comparison of arrival time histograms and Q-Q plots from exponential distribution sampling under different parameters.}\label{fig:ex1-p2-combined}
+  \caption{Arrival time histograms and Q-Q plots obtained from exponential inter-arrival times..}\label{fig:ex1-p2-combined}
 \end{figure}
 
 \section*{Exercise 2}
