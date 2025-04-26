@@ -133,9 +133,18 @@ they follow an exponential distribution. Specifically, we:
 
 In this experiment, we generate $k$ realizations of Poisson processes
 from $N$ inter-arrival times drawn independently from an exponential
-distribution with mean $\frac{1}{\lambda}$. Arrival times are
-obtained via cumulative summation. Only realizations for which the
-sum of the inter-arrival times does not exceed $T$ are retained.
+distribution with mean $\frac{1}{\lambda}$.
+To sample valid inter-arrival times, we sample $N+1$ inter-arrivals and check the following condition:
+\begin{enumerate}
+    \setlength\itemsep{0.01em}
+
+  \item That the sum of the first $N$ inter-arrival times does not exceed $T$.
+  \item That the sum of all $N+1$ inter-arrival times was greater than $T$.
+\end{enumerate}
+
+Condition 2 ensures that there is no bias towards small inter-arrivals.
+Arrival times are then
+obtained via cumulative summation.
 
 \noindent
 We then analyze the resulting arrival times by:
@@ -147,7 +156,7 @@ We then analyze the resulting arrival times by:
   \item Generating a Q-Q plot to compare the empirical distribution
     with the theoretical uniform distribution.
   \item Computing the empirical mean and variance of the aggregated
-    arrival times and assessing their agreement with uniformity assumptions.
+    arrival times and assessing their agreement with uniformity assumptions. (Table~\ref{tab:ex1-p2-ci-summary}).
 \end{itemize}
 
 \begin{table}[htbp]
@@ -158,11 +167,11 @@ We then analyze the resulting arrival times by:
     $\lambda$ & $k$ & Source & Mean & Var & Mean 95\% CI & Mean 99\%
     CI & Var 95\% CI & Var 99\% CI \\
     \midrule
-    100 & $10^3$ & Theoretical & 50 & 833.33 & -- & -- & -- & -- \\
+    100 & $10^3$ & Theoretical & 50.00 & 833.33 & -- & -- & -- & -- \\
     100 & $10^3$ & Empirical   & 50.00 & 833.12 & [48.17,51.75] &
     [47.64,52.22] & [783.70,880.25] & [763.66,907.33] \\
     \midrule
-    0.42 & $10^6$ & Theoretical & 50 & 833.33 & -- & -- & -- & -- \\
+    0.42 & $10^6$ & Theoretical & 50.00 & 833.33 & -- & -- & -- & -- \\
     0.42 & $10^6$ & Empirical   & 50.01 & 833.37 & [49.95,50.06] &
     [49.93,50.08] & [831.91,834.74] & [831.52,835.37] \\
     \bottomrule
