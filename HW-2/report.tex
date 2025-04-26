@@ -18,7 +18,7 @@
 \usepackage{float}              % [H] for figure placement
 \usepackage{color}              % For colored text
 \usepackage{booktabs}           % For better tables
-
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue]{hyperref}
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \renewcommand{\thealgorithm}{\arabic{algorithm}} % Numerazione autonoma
@@ -241,7 +241,7 @@ both methods in the following.
 
 \subsubsection*{Algorithm with the full knowledge of $f(x)$}
 In this case we assume to know the value of $A$, so that we know also
-the value of $c$ from Equation~\ref{eq:c}, so we can bound $f(x)$ with the
+the value of $c$ from \eqref{eq:c}, so we can bound $f(x)$ with the
 function $cg(x) = \frac{18}{A}\frac{x^2}{18} =\frac{x^2}{A}$ which is
 basically the envelope of $f(x)$.
 Thus, the algorithm is the one reported in Algorithm~\ref{alg:1}.
