@@ -107,9 +107,8 @@ they follow an exponential distribution. Specifically, we:
     [2.32,2.33] & [5.14,5.19] & [5.13,5.20] \\
     \bottomrule
   \end{tabular}
-  \caption{Summary of inter-arrival time statistics: mean, variance,
-    and confidence intervals for both experimental
-  setups.}\label{tab:ex1-p1-ci-summary}
+  \caption{Summary of inter-arrival time statistics: mean, variance, and
+  confidence intervals caluclated with the bootstrap method.}\label{tab:ex1-p1-ci-summary}
 \end{table}
 
 \begin{figure}[htbp]
@@ -177,8 +176,7 @@ We then analyze the resulting arrival times by:
     \bottomrule
   \end{tabular}
   \caption{Summary of arrival time statistics: mean, variance, and
-    confidence intervals for both experimental
-  setups.}\label{tab:ex1-p2-ci-summary}
+  confidence intervals caluclated with the bootstrap method.}\label{tab:ex1-p2-ci-summary}
 \end{table}
 
 \begin{figure}[htbp]
@@ -202,12 +200,7 @@ We then analyze the resulting arrival times by:
 
 \subsection*{Rejection Sampling}
 To apply the rejection sampling, we need to find a distribution such
-that we can bound the probability $f(x)$ such that
-\begin{equation*}
-  \frac{f(x)}{g(x)} \leq c
-\end{equation*}
-
-A valid proposal distribution can be
+that we can bound the probability $f(x)$ such that $\frac{f(x)}{g(x)} \leq c$. A valid proposal distribution can be:
 \begin{equation*}
   g(x) =
   \begin{cases}
@@ -216,13 +209,14 @@ A valid proposal distribution can be
   \end{cases}
 \end{equation*}
 where $k$ is such that $\int_{-3}^{3} g(x) \, dx =1$.
-Such $k$ is given by
+Such $k$ is given by:
 \begin{equation*}
   \int_{-3}^{3} g(x) \, dx =\int_{-3}^{3} kx^2 \, dx =  18k
   \overset{!}{=} 1 \Rightarrow k = \frac{1}{18}
 \end{equation*}
 
-The proposal distribution is then $g(x) = \frac{x^2}{18}$ and the bound is
+\noindent
+The proposal distribution is then $g(x) = \frac{x^2}{18}$ and the bound is:
 \begin{equation}
   \label{eq:c}
   \frac{\frac{1}{A}x^2\sin^2(\pi x)}{\frac{x^2}{18}} =
@@ -247,10 +241,10 @@ both methods in the following.
 
 \subsubsection*{Algorithm with the full knowledge of $f(x)$}
 In this case we assume to know the value of $A$, so that we know also
-the value of $c$ from\ref{eq:c}, so we can bound $f(x)$ with the
+the value of $c$ from Equation~\ref{eq:c}, so we can bound $f(x)$ with the
 function $cg(x) = \frac{18}{A}\frac{x^2}{18} =\frac{x^2}{A}$ which is
 basically the envelope of $f(x)$.
-Thus, the algorithm is the one reported in Algorithm\ref{alg:1}.
+Thus, the algorithm is the one reported in Algorithm~\ref{alg:1}.
 
 \begin{algorithm}
   \caption{Rejection sampling with full knowledge of $f(x)$}\label{alg:1}
@@ -306,7 +300,7 @@ works, but, clearly, being less precise in the bounding, the
 acceptance rate drops: the acceptance rate on $10^8$ iterations is
 $\frac{10^8}{16381697} \approx 0.16$. The distribution of the drawn
 samples is shown against the theoretical one in
-Figure~\ref{fig:rej-nok},, while the accepted samples and the
+Figure~\ref{fig:rej-nok}, while the accepted samples and the
 rejected samples (from the proposal) are shown in Figure~\ref{fig:rs-nok}.
 
 \subsection*{Confidence intervals}
