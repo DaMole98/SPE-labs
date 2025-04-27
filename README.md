@@ -51,7 +51,7 @@ pip install -r requirements.txt
 2. If you have [Pandoc](https://pandoc.org/installing.html) installed:
 
 ```bash
-jupyter nbconvert --execute --to pdf <NOTEBOOK_PATH>
+jupyter nbconvert --to pdf <NOTEBOOK_PATH>
 ```
 
 3. If you don't have Pandoc:
