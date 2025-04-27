@@ -337,9 +337,9 @@ We subdivided 20000 variates into 100 disjoint sets and for each of
 them we computed the 95\% confidence intervals, both with the
 Gaussian approximation approach and the Bootstrap approach. As
 expected, the number of confidence intervals containing the true mean
-is 95 in the case of the Gaussian approximation and 94 in the case of
+is 95 for both the Gaussian approximation and
 the bootstrap CIs (we can see that the bootstrap method slightly
-understimates the CI, so we find less accurate CIs).
+understimates the CI).
 Figure~\ref{fig:CLT} shows the distribution of the sample mean
 computed in the 100 sets, showing that the Central Limit Theorem
 holds over this statistic.
@@ -397,16 +397,16 @@ holds over this statistic.
 
 \begin{figure}[htbp]
   \centering
-  \begin{subfigure}[b]{0.45\textwidth}
+  \begin{subfigure}[t]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{images/med-Q-CI.png}
+    \includegraphics[width=\textwidth]{images/mean-CI.png}
     \caption{Mean CI computed with the Gaussian
     approximation.}\label{fig:mean-1}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.45\textwidth}
+  \begin{subfigure}[t]{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{images/med-Q-Boot-CI.png}
+    \includegraphics[width=\textwidth]{images/mean-Boot-CI.png}
     \caption{Mean CI computed with the Bootstrap heuristic.}\label{fig:mean-2}
   \end{subfigure}
   \caption{PDF and mean CI.}\label{fig:mean-CI}
