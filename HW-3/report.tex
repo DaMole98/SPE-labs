@@ -104,6 +104,61 @@ To remove the trend, we need to decide which polynomial degree is the best. Then
 
 \subsubsection*{Find the best degree}
 
+To decide which polynomial degree is the best, we use the root mean square error (RMSE) of the polynomial fit for each degree (\ref{fig:rmse}). We also use cross-validation to estimate the RMSE of the polynomial fit for each degree (\ref{fig:cv-rmse}).
+
+Both methods in Figure~\ref{fig:degrees} show that the best degree is 4.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/degrees_rmse.png}
+    \caption{
+      RMSE of the polynomial for each degree.
+    }\label{fig:rmse}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/cv_degrees_rmse.png}
+    \caption{
+      Mean RMSE from the cross-validation for each degree.
+    }\label{fig:cv-rmse}
+  \end{subfigure}
+  \caption{
+    Evaluation of the polynomial degree.
+  }\label{fig:degrees}
+\end{figure}
+
+\subsubsection*{De-trend the data}
+
+To de-trend the data, we just subtract the best polynomial fit (degree 4) from the data. The result is shown in Figure~\ref{fig:detrended}.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/detrended_scatter.png}
+    \caption{
+      Scatter plot of the de-trended dataset.
+    }\label{fig:detrended-scatter}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/detrended_dist.png}
+    \caption{
+      Histogram of the de-trended dataset.
+    }\label{fig:detrended-hist}
+  \end{subfigure}
+  \caption{
+    De-trended dataset.
+  }\label{fig:detrended}
+\end{figure}
+
+\subsection*{Part 4: Fit a mixture of Gaussians}
+
+We use ....
 
 
 \end{document}
