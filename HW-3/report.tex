@@ -73,13 +73,13 @@ First, we need to visualize the trend in the data. To do this, we scatter plot t
 
 \begin{figure}[htbp]
   \centering
-  \begin{subfigure}[b]{0.48\textwidth}
+  \begin{subfigure}[t]{0.4\textwidth}
     \centering
     \includegraphics[width=\textwidth]{images/trended_scatter.png}
     \caption{Scatter plot of the dataset.}\label{fig:trend-scatter}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.48\textwidth}
+  \begin{subfigure}[t]{0.4\textwidth}
     \centering
     \includegraphics[width=\textwidth]{images/trended_dist.png}
     \caption{Histogram of the dataset.}\label{fig:trend-hist}
@@ -110,7 +110,7 @@ Both methods in Figure~\ref{fig:degrees} show that the best degree is 4.
 
 \begin{figure}[htbp]
   \centering
-  \begin{subfigure}[b]{0.48\textwidth}
+  \begin{subfigure}[t]{0.4\textwidth}
     \centering
     \includegraphics[width=\textwidth]{images/degrees_rmse.png}
     \caption{
@@ -118,7 +118,7 @@ Both methods in Figure~\ref{fig:degrees} show that the best degree is 4.
     }\label{fig:rmse}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.48\textwidth}
+  \begin{subfigure}[t]{0.4\textwidth}
     \centering
     \includegraphics[width=\textwidth]{images/cv_degrees_rmse.png}
     \caption{
@@ -136,7 +136,7 @@ To de-trend the data, we just subtract the best polynomial fit (degree 4) from t
 
 \begin{figure}[htbp]
   \centering
-  \begin{subfigure}[b]{0.48\textwidth}
+  \begin{subfigure}[t]{0.4\textwidth}
     \centering
     \includegraphics[width=\textwidth]{images/detrended_scatter.png}
     \caption{
@@ -144,7 +144,7 @@ To de-trend the data, we just subtract the best polynomial fit (degree 4) from t
     }\label{fig:detrended-scatter}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.48\textwidth}
+  \begin{subfigure}[t]{0.4\textwidth}
     \centering
     \includegraphics[width=\textwidth]{images/detrended_dist.png}
     \caption{
@@ -158,7 +158,60 @@ To de-trend the data, we just subtract the best polynomial fit (degree 4) from t
 
 \subsection*{Part 4: Fit a mixture of Gaussians}
 
-We use ....
+To fit a mixture of Gaussians to the de-trended data, we implement the EM algorithm.
 
+We run the EM algorithm with a maximum of $10^9$ iterations and a tolerance of $10^{-8}$ with two initilization settings:
+\begin{itemize}
+    \setlength\itemsep{0.01em}
+  \item starting from a uniform prior, means randomly chosen from the data, and variances all equals to the dataset variance;
+  \item starting from K-means clustering parameters.
+\end{itemize}
+
+The results of the EM algorithm are shown in Table~\ref{tab:gmm-results} and visualized in Figure~\ref{fig:gmm-plot}.
+
+\begin{table}[htbp]
+  \centering
+  \small
+  \begin{tabular}{l cc|ccc|ccc}
+    \toprule
+    & \multicolumn{2}{c}{Original} & \multicolumn{3}{c}{KMeans init (iter.\ 358)} & \multicolumn{3}{c}{Random init (iter.\ 363)} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-6} \cmidrule(lr){7-9}
+    Component & $\mu$ & $\sigma^2$ & Weight & $\mu$ & $\sigma^2$ & Weight & $\mu$ & $\sigma^2$ \\
+    \midrule
+    1 & -5 & 3 & 0.3534 & 4.2616 & 0.9841 & 0.3534 & 4.2616 & 0.9841 \\
+    2 &  0 & 6 & 0.3024 & 0.4021 & 5.9683 & 0.3534 & 0.4021 & 5.9683 \\
+    3 &  4 & 1 & 0.3443 & -4.7274 & 3.0625 & 0.3443 & -4.7274 & 3.0625 \\
+    \bottomrule
+  \end{tabular}
+  \caption{
+    Results from the EM algorithm for the two initialization settings compared to the original Gaussian parameters.
+  }\label{tab:gmm-results}
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.6\textwidth]{images/gmm.png}\caption{
+    Gaussian Mixture Models fitted to the de-trended distribution in comparison with the original gaussians assuming uniform priors.
+  }\label{fig:gmm-plot}
+\end{figure}
+
+\subsection*{Part 4: Find the optimal number of gaussians}
+
+To find the optimal number of Gaussians, we use the Bayesian Information Criterion (BIC) as evaluation metric. The BIC is defined as:
+\begin{equation}
+  \text{BIC} = -2\log L + k\log n
+\end{equation}
+where $L$ is the likelihood of the model, $k$ is the number of parameters in the model, and $n$ is the number of data points.
+The BIC is a trade-off between the goodness of fit of the model and the complexity of the model that aims to avoid overfitting.
+
+We fit GMM models with 1 to 10 Gaussians for a maximum of $10^3$ iterations and a tolerance of $10^{-6}$ with random means initialization as before.
+The BIC scores are shown in Figure~\ref{fig:gmm-eval} and the optimal number of Gaussians is 3.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.4\textwidth]{images/gmms-eval.png}\caption{
+    Bayesian Information Criterion (BIC) score for increasing number of gaussians.
+  }\label{fig:gmm-eval}
+\end{figure}
 
 \end{document}
