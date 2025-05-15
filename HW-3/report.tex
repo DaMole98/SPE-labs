@@ -160,11 +160,11 @@ To de-trend the data, we just subtract the best polynomial fit (degree 4) from t
 
 To fit a mixture of Gaussians to the de-trended data, we implement the EM algorithm.
 
-We run the EM algorithm with a maximum of $10^9$ iterations and a tolerance of $10^{-8}$ with two initilization settings:
+We run the EM algorithm with a maximum of $10^3$ iterations and a tolerance of $10^{-6}$ with two initilization settings:
 \begin{itemize}
     \setlength\itemsep{0.01em}
   \item starting from a uniform prior, means randomly chosen from the data, and variances all equals to the dataset variance;
-  \item starting from K-means clustering parameters.
+  \item starting from K-means clustering parameters, i.e. setting the priors as the fraction of points for each cluster, means as the cluster centroids and variances estimated as intra-cluster variances.
 \end{itemize}
 
 The results of the EM algorithm are shown in Table~\ref{tab:gmm-results} and visualized in Figure~\ref{fig:gmm-plot}.
@@ -178,9 +178,9 @@ The results of the EM algorithm are shown in Table~\ref{tab:gmm-results} and vis
     \cmidrule(lr){2-3} \cmidrule(lr){4-6} \cmidrule(lr){7-9}
     Component & $\mu$ & $\sigma^2$ & Weight & $\mu$ & $\sigma^2$ & Weight & $\mu$ & $\sigma^2$ \\
     \midrule
-    1 & -5 & 3 & 0.3534 & 4.2616 & 0.9841 & 0.3534 & 4.2616 & 0.9841 \\
+    1 & 4 & 1 & 0.3534 & 4.2616 & 0.9841 & 0.3534 & 4.2616 & 0.9841 \\
     2 &  0 & 6 & 0.3024 & 0.4021 & 5.9683 & 0.3534 & 0.4021 & 5.9683 \\
-    3 &  4 & 1 & 0.3443 & -4.7274 & 3.0625 & 0.3443 & -4.7274 & 3.0625 \\
+    3 &  -5 & 3 & 0.3443 & -4.7274 & 3.0625 & 0.3443 & -4.7274 & 3.0625 \\
     \bottomrule
   \end{tabular}
   \caption{
@@ -195,9 +195,9 @@ The results of the EM algorithm are shown in Table~\ref{tab:gmm-results} and vis
   }\label{fig:gmm-plot}
 \end{figure}
 
-\subsection*{Part 4: Find the optimal number of gaussians}
+\subsection*{Part 5: Find the optimal number of gaussians}
 
-To find the optimal number of Gaussians, we use the Bayesian Information Criterion (BIC) as evaluation metric. The BIC is defined as:
+To find the optimal number of Gaussians, we use the Bayesian Information Criterion (BIC) as regularization term. The BIC is defined as:
 \begin{equation}
   \text{BIC} = -2\log L + k\log n
 \end{equation}
