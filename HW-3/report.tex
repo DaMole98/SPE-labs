@@ -164,7 +164,7 @@ We run the EM algorithm with a maximum of $10^3$ iterations and a tolerance of $
 \begin{itemize}
     \setlength\itemsep{0.01em}
   \item starting from a uniform prior, means randomly chosen from the data, and variances all equals to the dataset variance;
-  \item starting from K-means clustering parameters, i.e. setting the priors as the fraction of points for each cluster, means as the cluster centroids and variances estimated as intra-cluster variances.
+  \item starting from K-means clustering parameters, i.e.~setting the priors as the fraction of points for each cluster, means as the cluster centroids and variances estimated as intra-cluster variances.
 \end{itemize}
 
 The results of the EM algorithm are shown in Table~\ref{tab:gmm-results} and visualized in Figure~\ref{fig:gmm-plot}.
@@ -174,13 +174,13 @@ The results of the EM algorithm are shown in Table~\ref{tab:gmm-results} and vis
   \small
   \begin{tabular}{l cc|ccc|ccc}
     \toprule
-    & \multicolumn{2}{c}{Original} & \multicolumn{3}{c}{KMeans init (iter.\ 358)} & \multicolumn{3}{c}{Random init (iter.\ 363)} \\
+    & \multicolumn{2}{c}{Original} & \multicolumn{3}{c}{KMeans init (iter.\ 569)} & \multicolumn{3}{c}{Random init (iter.\ 473)} \\
     \cmidrule(lr){2-3} \cmidrule(lr){4-6} \cmidrule(lr){7-9}
     Component & $\mu$ & $\sigma^2$ & Weight & $\mu$ & $\sigma^2$ & Weight & $\mu$ & $\sigma^2$ \\
     \midrule
-    1 & 4 & 1 & 0.3534 & 4.2616 & 0.9841 & 0.3534 & 4.2616 & 0.9841 \\
+    1 &  -5 & 3 & 0.3443 & -4.7274 & 3.0625 & 0.3443 & -4.7274 & 3.0625 \\
     2 &  0 & 6 & 0.3024 & 0.4021 & 5.9683 & 0.3534 & 0.4021 & 5.9683 \\
-    3 &  -5 & 3 & 0.3443 & -4.7274 & 3.0625 & 0.3443 & -4.7274 & 3.0625 \\
+    3 & 4 & 1 & 0.3534 & 4.2616 & 0.9841 & 0.3534 & 4.2616 & 0.9841 \\
     \bottomrule
   \end{tabular}
   \caption{
