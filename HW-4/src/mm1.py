@@ -7,12 +7,12 @@ class MM1:
         self._busy = busy
 
     def arrival(self):
-        if not self._busy and self._queue == 0:
+        if not self._busy:
             self._busy = True
-        elif self._busy and self._queue > 0:
+        elif self._busy:
             self._queue += 1
         else:
-            raise Exception("Inconsistent state of the server: busy flag: {} and queue length: {}".format(self.busy, self.queue))
+            raise Exception("Arrival: inconsistent state of the server: busy flag: {} and queue length: {}".format(self._busy, self._queue))
         return self._queue # return to the scheduler the number of requests in the queue. INVARIANT: self.busy == True
     
     def departure(self):
@@ -22,7 +22,7 @@ class MM1:
         elif self._queue > 0:
             self._queue -= 1
         else:
-            raise Exception("Inconsistent state of the server: busy flag: {} and queue length: {}".format(self.busy, self.queue))
+            raise Exception("Departure: inconsistent state of the server: busy flag: {} and queue length: {}".format(self._busy, self._queue))
         return self._queue # return to the scheduler the number of requests in the queue. if queue > 0, schedule next departure
         # INVARIANT: self.busy == True if queue > 0
 

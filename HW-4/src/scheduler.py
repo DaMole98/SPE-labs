@@ -21,7 +21,8 @@ class Scheduler:
         """
         Schedule an event.
         """
-        heapq.heappush(self.event_queue, (-event.event_time, event)) #heapq implements a min-heap, so we need to invert the event_time to get a max-heap
+        heapq.heappush(self.event_queue, (event.event_time, event)) #heapq implements a min-heap, so the event with the smallest event_time will be at the top.
+                                                                    #tuple is needed to sort the events by event_time
         
         return event.event_time
     
