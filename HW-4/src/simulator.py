@@ -1,6 +1,7 @@
 from scheduler import Scheduler
 from event import Event, EventType
 from mm1 import MM1
+import heapq
 
 import numpy as np
 
@@ -52,9 +53,9 @@ class Simulator:
         self.abs_t = 0.0
         self.arr_t = 0.0
         self.dep_t = 0.0
+        self.offset_t = 0.0
         self.narr = 0
         self.ndep = 0
-        self.offset = 0.0
 
     def schedule_initial_events(self):
         """Schedule the first arrival and the first departure events."""
@@ -73,13 +74,15 @@ class Simulator:
         """
         self.step_num += 1
 
-        old_t = self.dep_t
+        old_t = self.abs_t
         event = self.scheduler.get_next_event()
         self.abs_t = event.time
 
+        print(f"Event time: {event.time:.3f}, event type: {event.type}, event id: {event.id}")
         assert old_t < self.abs_t, "Event time must be non-decreasing"
 
         if event.type == EventType.ARRIVAL:
+            self.arr_t = event.time
             self.narr += 1
 
             srv_busy = self.mm1_srv.is_busy()
@@ -87,26 +90,27 @@ class Simulator:
 
             if not srv_busy:
                 # If the server was free, schedule the departure of the incoming request
-                t_next_dep = self.dep_t + self.rng.exponential(1.0 / self.service_rate)
-                e_next_dep = Event(id=self.ndep,
+                t_next_dep = self.arr_t + self.rng.exponential(1.0 / self.service_rate)
+                e_next_dep = Event(id=f"{self.ndep}D",
                                type=EventType.DEPARTURE,
                                time=t_next_dep)
                 self.scheduler.schedule(e_next_dep)
 
             #schedule the next arrival
             t_next_arr = self.arr_t + self.rng.exponential(1.0 / self.arrival_rate)
-            e_next_arr = Event(id=self.narr,
+            e_next_arr = Event(id=f"{self.narr}A",
                            type=EventType.ARRIVAL,
                            time=t_next_arr)
             self.scheduler.schedule(e_next_arr)
 
         elif event.type == EventType.DEPARTURE:
+            self.dep_t = event.time
             self.ndep += 1
             self.mm1_srv.departure()
             if self.mm1_srv.is_busy():
                 # If the server is still busy, schedule the next departure
                 t_next_dep = self.dep_t + self.rng.exponential(1.0 / self.service_rate)
-                e_next_dep = Event(id=self.ndep,
+                e_next_dep = Event(id=f"{self.ndep}D",
                                type=EventType.DEPARTURE,
                                time=t_next_dep)
                 self.scheduler.schedule(e_next_dep)
@@ -117,14 +121,35 @@ class Simulator:
         Warm-up phase: skip the first `warmup_events` events
         to eliminate the effect of initial conditions.
         """
+        print(f"Running warmup phase with {warmup_events} events")
         self.schedule_initial_events()
         for _ in range(warmup_events):
             self.step()
-        self.offset = self.dep_t
-        #reset counters
+        print(f"Warmup phase completed. Final time: {self.abs_t:.3f}")
+        print(f"Final queue length: {self.mm1_srv.get_queue_length()}")
+        print(f"Server busy: {self.mm1_srv.is_busy()}")
+        print("Resetting simulation state after warmup.")
+        self.offset_t = self.abs_t
+
+        # offset the event times in the scheduler
+        events = []
+        for evt in self.scheduler.event_queue:
+            new_t = evt.time - self.offset_t
+            evt.time = new_t
+            events.append(evt)
+
+        # Flush the scheduler and reschedule the events
+        self.scheduler.flush()
+        for evt in events:
+            self.scheduler.schedule(evt)
+        self.step_num = 0
+        self.abs_t = 0.0
+        self.arr_t = 0.0
+        self.dep_t = 0.0
         self.narr = 0
         self.ndep = 0
-        self.step_num = 0
+
+
 
     def run(self,
             termination_condition,
@@ -140,12 +165,20 @@ class Simulator:
 
         if warmup:
             self.warmup(warmup_events)
+            print("-------------------------------")
+            print("-------------------------------")
+
         else:
+            print("Skipping warmup phase.")
             self.schedule_initial_events()
 
+
+        print("Running simulation...")
         # Main simulation loop
-        while not termination_condition(self.mm1_srv,self.scheduler,self.narr,self.ndep,self.dep_t):
+        while not termination_condition(self.mm1_srv,self.scheduler,self.narr,self.ndep,self.abs_t):
             self.step()
+
+
 
     def report(self):
         """Print final simulation metrics."""
@@ -157,17 +190,15 @@ class Simulator:
         print(f"Server busy: {busy}")
         total = self.narr + self.ndep
         if total > 0:
-            lam_obs = self.narr / total
-            mu_obs = self.ndep / total
-            print(f"Observed arrival rate: {lam_obs:.4f}")
-            print(f"Observed service rate: {mu_obs:.4f}")
+            print(f"Total Arrivals: {self.narr:.3f}")
+            print(f"Total Services: {self.ndep:.3f}")
 
 
 
 if __name__ == "__main__":
     # Define termination policy: stop after 10,000 processed events
     policy = (TerminationPolicy()
-              .add(lambda srv, sched, narr, ndep, t: (narr + ndep) >= int(1e6))
+              .add(lambda srv, sched, narr, ndep, t: t >= 120.0)
               .all())
 
     arrival_rate = 1.0
@@ -175,5 +206,5 @@ if __name__ == "__main__":
     warmup = True
     print(f"Running simulation with arrival rate: {arrival_rate}, service rate: {service_rate}, warmup: {warmup}")
     sim = Simulator(arrival_rate=1.0, service_rate=2.0, seed=42)
-    sim.run(termination_condition=policy, warmup=True, warmup_events=10000)
+    sim.run(termination_condition=policy, warmup=warmup, warmup_events=1000)
     sim.report()

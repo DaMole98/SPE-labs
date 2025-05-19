@@ -46,3 +46,9 @@ class Scheduler:
         Get the length of the event queue.
         """
         return len(self.event_queue)
+    
+    def flush(self):
+        """
+        Flush the event queue.
+        """
+        self.event_queue = []
