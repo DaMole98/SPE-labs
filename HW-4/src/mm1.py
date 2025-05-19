@@ -16,7 +16,7 @@ class MM1:
         return self._queue # return to the scheduler the number of requests in the queue. INVARIANT: self.busy == True
     
     def departure(self):
-        assert self._busy, "BROKEN INVARIANT: Departure called when server is not busy"
+        assert self._busy, "INVARIANT VIOLATED: Departure called when server is not busy"
         if self._queue == 0:
             self._busy = False
         elif self._queue > 0:
@@ -28,7 +28,11 @@ class MM1:
 
     def get_queue_length(self):
         return self._queue
+    
     def is_busy(self):
         return self._busy
     
+    def enqueue(self):
+        self.queue += 1
+        return self.queue
     

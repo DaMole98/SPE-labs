@@ -31,12 +31,13 @@ class Simulator:
         Configure simulation parameters (arrival_rate, service_rate, seed).
         reset() initializes the internal state.
         """
-        self.step_num = 0
         self.arrival_rate = arrival_rate
         self.service_rate = service_rate
         self.seed = seed
         self.rng = np.random.default_rng(seed)
         self.reset()
+
+        self.old_dtime = 0.0
 
     def reset(self):
         """Reset the MM1 server, scheduler, simulation clock, and counters."""
@@ -47,7 +48,10 @@ class Simulator:
         # In case the Scheduler singleton retains leftover events
         self.scheduler.event_queue = []
 
-        self.dtime = 0.0
+        self.step_num = 0
+        self.abs_t = 0.0
+        self.arr_t = 0.0
+        self.dep_t = 0.0
         self.narr = 0
         self.ndep = 0
         self.offset = 0.0
@@ -55,7 +59,7 @@ class Simulator:
     def schedule_initial_events(self):
         """Schedule the first arrival and the first departure events."""
         t_arr = self.rng.exponential(1.0 / self.arrival_rate)
-        e_arr = Event(event_id=0, event_type=EventType.ARRIVAL, event_time=t_arr)
+        e_arr = Event(id=0, type=EventType.ARRIVAL, time=t_arr)
         self.scheduler.schedule(e_arr)
 
 
@@ -69,41 +73,43 @@ class Simulator:
         """
         self.step_num += 1
 
-
+        old_t = self.dep_t
         event = self.scheduler.get_next_event()
-        self.dtime = event.event_time
+        self.abs_t = event.time
 
+        assert old_t < self.abs_t, "Event time must be non-decreasing"
 
-        if event.event_type == EventType.ARRIVAL:
-            t_next_arr = self.dtime + self.rng.exponential(1.0 / self.arrival_rate)
-            e_next_arr = Event(event_id=self.narr,
-                           event_type=EventType.ARRIVAL,
-                           event_time=t_next_arr)
-            self.scheduler.schedule(e_next_arr)
-        
+        if event.type == EventType.ARRIVAL:
             self.narr += 1
-            was_busy = self.mm1_srv.is_busy()
+
+            srv_busy = self.mm1_srv.is_busy()
             self.mm1_srv.arrival()
 
-            if was_busy:
-                # If the server was busy, schedule the next departure
-                t_next_dep = self.dtime + self.rng.exponential(1.0 / self.service_rate)
-                e_next_dep = Event(event_id=self.ndep,
-                               event_type=EventType.DEPARTURE,
-                               event_time=t_next_dep)
+            if not srv_busy:
+                # If the server was free, schedule the departure of the incoming request
+                t_next_dep = self.dep_t + self.rng.exponential(1.0 / self.service_rate)
+                e_next_dep = Event(id=self.ndep,
+                               type=EventType.DEPARTURE,
+                               time=t_next_dep)
                 self.scheduler.schedule(e_next_dep)
 
+            #schedule the next arrival
+            t_next_arr = self.arr_t + self.rng.exponential(1.0 / self.arrival_rate)
+            e_next_arr = Event(id=self.narr,
+                           type=EventType.ARRIVAL,
+                           time=t_next_arr)
+            self.scheduler.schedule(e_next_arr)
 
-        elif event.event_type == EventType.DEPARTURE:
+        elif event.type == EventType.DEPARTURE:
             self.ndep += 1
             self.mm1_srv.departure()
             if self.mm1_srv.is_busy():
-                t_next_dep = self.dtime + self.rng.exponential(1.0 / self.service_rate)
-                e_next_dep = Event(event_id=self.ndep,
-                               event_type=EventType.DEPARTURE,
-                               event_time=t_next_dep)
+                # If the server is still busy, schedule the next departure
+                t_next_dep = self.dep_t + self.rng.exponential(1.0 / self.service_rate)
+                e_next_dep = Event(id=self.ndep,
+                               type=EventType.DEPARTURE,
+                               time=t_next_dep)
                 self.scheduler.schedule(e_next_dep)
-
 
 
     def warmup(self, warmup_events=1000):
@@ -114,7 +120,11 @@ class Simulator:
         self.schedule_initial_events()
         for _ in range(warmup_events):
             self.step()
-        self.offset = self.dtime
+        self.offset = self.dep_t
+        #reset counters
+        self.narr = 0
+        self.ndep = 0
+        self.step_num = 0
 
     def run(self,
             termination_condition,
@@ -134,7 +144,7 @@ class Simulator:
             self.schedule_initial_events()
 
         # Main simulation loop
-        while not termination_condition(self.mm1_srv,self.scheduler,self.narr,self.ndep,self.dtime):
+        while not termination_condition(self.mm1_srv,self.scheduler,self.narr,self.ndep,self.dep_t):
             self.step()
 
     def report(self):
@@ -160,6 +170,10 @@ if __name__ == "__main__":
               .add(lambda srv, sched, narr, ndep, t: (narr + ndep) >= int(1e6))
               .all())
 
+    arrival_rate = 1.0
+    service_rate = 2.0
+    warmup = True
+    print(f"Running simulation with arrival rate: {arrival_rate}, service rate: {service_rate}, warmup: {warmup}")
     sim = Simulator(arrival_rate=1.0, service_rate=2.0, seed=42)
-    sim.run(termination_condition=policy, warmup=False, warmup_events=10000)
+    sim.run(termination_condition=policy, warmup=True, warmup_events=10000)
     sim.report()

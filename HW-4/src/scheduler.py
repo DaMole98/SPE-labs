@@ -21,17 +21,17 @@ class Scheduler:
         """
         Schedule an event.
         """
-        heapq.heappush(self.event_queue, (event.event_time, event)) #heapq implements a min-heap, so the event with the smallest event_time will be at the top.
-                                                                    #tuple is needed to sort the events by event_time
-        
-        return event.event_time
+        heapq.heappush(self.event_queue, event) #heapq implements a min-heap, so the smallest
+                                                                    #(accordingly to the overloaded "<" in the Event class") 
+                                                                    # event will be at the root
+        return event.time
     
     def get_next_event(self):
         """
         Get the next event from the queue.
         """
         if self.event_queue:
-            return heapq.heappop(self.event_queue)[1]
+            return heapq.heappop(self.event_queue)
         else:
             return None
     
