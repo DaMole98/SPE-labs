@@ -16,18 +16,18 @@ class TerminationPolicy:
 
     def any(self):
         """Return a predicate that terminates if any condition is True."""
-        return lambda srv, sched, narr, ndep, t: any(
-            cond(srv, sched, narr, ndep, t) for cond in self.conditions
+        return lambda srv, sched, narr, ndep, abs_t: any(
+            cond(srv, sched, narr, ndep, abs_t) for cond in self.conditions
         )
 
     def all(self):
         """Return a predicate that terminates only if all conditions are True."""
-        return lambda srv, sched, narr, ndep, t: all(
-            cond(srv, sched, narr, ndep, t) for cond in self.conditions
+        return lambda srv, sched, narr, ndep, abs_t: all(
+            cond(srv, sched, narr, ndep, abs_t) for cond in self.conditions
         )
 
 class Simulator:
-    def __init__(self, arrival_rate=1.0, service_rate=2.0, seed=42):
+    def __init__(self, arrival_rate=1.0, service_rate=2.0, seed=42, path_to_csv = None):
         """
         Configure simulation parameters (arrival_rate, service_rate, seed).
         reset() initializes the internal state.
@@ -38,7 +38,7 @@ class Simulator:
         self.rng = np.random.default_rng(seed)
         self.reset()
 
-        self.old_dtime = 0.0
+        self.path_to_csv = path_to_csv
 
     def reset(self):
         """Reset the MM1 server, scheduler, simulation clock, and counters."""
@@ -47,7 +47,7 @@ class Simulator:
                            queue=0, busy=False)
         self.scheduler = Scheduler.init()
         # In case the Scheduler singleton retains leftover events
-        self.scheduler.event_queue = []
+        self.scheduler.flush()
 
         self.step_num = 0
         self.abs_t = 0.0
@@ -57,8 +57,21 @@ class Simulator:
         self.narr = 0
         self.ndep = 0
 
-    def schedule_initial_events(self):
-        """Schedule the first arrival and the first departure events."""
+    def init_csv(self):
+        # Prepare CSV columns if writing to CSV
+        if self.path_to_csv is not None:
+            with open(self.path_to_csv, 'w') as f:
+                f.write("time,arrivals,departures,queue_length,server_busy\n")
+
+    def write_to_csv(self):
+        if self.path_to_csv is not None:
+            with open(self.path_to_csv, 'a') as f:
+                f.write(f"{self.abs_t},{self.narr},{self.ndep},{self.mm1_srv.get_queue_length()},{self.mm1_srv.is_busy()}\n")
+
+
+
+    def schedule_initial_event(self):
+        """Schedule the first arrival event."""
         t_arr = self.rng.exponential(1.0 / self.arrival_rate)
         e_arr = Event(id=0, type=EventType.ARRIVAL, time=t_arr)
         self.scheduler.schedule(e_arr)
@@ -78,7 +91,7 @@ class Simulator:
         event = self.scheduler.get_next_event()
         self.abs_t = event.time
 
-        print(f"Event time: {event.time:.3f}, event type: {event.type}, event id: {event.id}")
+        #print(f"Event time: {event.time:.3f}, event type: {event.type}, event id: {event.id}")
         assert old_t < self.abs_t, "Event time must be non-decreasing"
 
         if event.type == EventType.ARRIVAL:
@@ -122,7 +135,7 @@ class Simulator:
         to eliminate the effect of initial conditions.
         """
         print(f"Running warmup phase with {warmup_events} events")
-        self.schedule_initial_events()
+        self.schedule_initial_event()
         for _ in range(warmup_events):
             self.step()
         print(f"Warmup phase completed. Final time: {self.abs_t:.3f}")
@@ -154,7 +167,8 @@ class Simulator:
     def run(self,
             termination_condition,
             warmup=False,
-            warmup_events=1000):
+            warmup_events=1000
+            ):
         """
         Run the simulation until `termination_condition(srv, sched, narr, ndep, t)` returns True.
         If warmup is True, perform the warm-up phase first.
@@ -162,6 +176,7 @@ class Simulator:
         # Full reset + reset RNG for reproducibility
         self.reset()
         self.rng = np.random.default_rng(self.seed)
+        self.init_csv()
 
         if warmup:
             self.warmup(warmup_events)
@@ -170,12 +185,14 @@ class Simulator:
 
         else:
             print("Skipping warmup phase.")
-            self.schedule_initial_events()
-
+            self.schedule_initial_event()
 
         print("Running simulation...")
         # Main simulation loop
         while not termination_condition(self.mm1_srv,self.scheduler,self.narr,self.ndep,self.abs_t):
+            # Check if we need to write to CSV
+            if self.path_to_csv is not None:
+                self.write_to_csv()
             self.step()
 
 
@@ -196,15 +213,15 @@ class Simulator:
 
 
 if __name__ == "__main__":
-    # Define termination policy: stop after 10,000 processed events
+    # Define termination policy
     policy = (TerminationPolicy()
-              .add(lambda srv, sched, narr, ndep, t: t >= 120.0)
+              .add(lambda srv, sched, narr, ndep, abs_t: abs_t >= 120.0)
               .all())
 
-    arrival_rate = 1.0
-    service_rate = 2.0
+    lambda_ = 1.0
+    mu = 2.0
     warmup = True
-    print(f"Running simulation with arrival rate: {arrival_rate}, service rate: {service_rate}, warmup: {warmup}")
+    print(f"Running simulation with arrival rate: {lambda_}, service rate: {mu}, warmup: {warmup}")
     sim = Simulator(arrival_rate=1.0, service_rate=2.0, seed=42)
     sim.run(termination_condition=policy, warmup=warmup, warmup_events=1000)
     sim.report()
