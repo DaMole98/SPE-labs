@@ -129,46 +129,7 @@ class Simulator:
                 self.scheduler.schedule(e_next_dep)
 
 
-    def warmup(self, warmup_events=1000):
-        """
-        Warm-up phase: skip the first `warmup_events` events
-        to eliminate the effect of initial conditions.
-        """
-        print(f"Running warmup phase with {warmup_events} events")
-        self.schedule_initial_event()
-        for _ in range(warmup_events):
-            self.step()
-        print(f"Warmup phase completed. Final time: {self.abs_t:.3f}")
-        print(f"Final queue length: {self.mm1_srv.get_queue_length()}")
-        print(f"Server busy: {self.mm1_srv.is_busy()}")
-        print("Resetting simulation state after warmup.")
-        self.offset_t = self.abs_t
-
-        # offset the event times in the scheduler
-        events = []
-        for evt in self.scheduler.event_queue:
-            new_t = evt.time - self.offset_t
-            evt.time = new_t
-            events.append(evt)
-
-        # Flush the scheduler and reschedule the events
-        self.scheduler.flush()
-        for evt in events:
-            self.scheduler.schedule(evt)
-        self.step_num = 0
-        self.abs_t = 0.0
-        self.arr_t = 0.0
-        self.dep_t = 0.0
-        self.narr = 0
-        self.ndep = 0
-
-
-
-    def run(self,
-            termination_condition,
-            warmup=False,
-            warmup_events=1000
-            ):
+    def run(self, termination_condition):
         """
         Run the simulation until `termination_condition(srv, sched, narr, ndep, t)` returns True.
         If warmup is True, perform the warm-up phase first.
@@ -178,14 +139,8 @@ class Simulator:
         self.rng = np.random.default_rng(self.seed)
         self.init_csv()
 
-        if warmup:
-            self.warmup(warmup_events)
-            print("-------------------------------")
-            print("-------------------------------")
 
-        else:
-            print("Skipping warmup phase.")
-            self.schedule_initial_event()
+        self.schedule_initial_event()
 
         print("Running simulation...")
         # Main simulation loop
@@ -221,7 +176,7 @@ if __name__ == "__main__":
     lambda_ = 1.0
     mu = 2.0
     warmup = True
-    print(f"Running simulation with arrival rate: {lambda_}, service rate: {mu}, warmup: {warmup}")
+    print(f"Running simulation with arrival rate: {lambda_}, service rate: {mu}")
     sim = Simulator(arrival_rate=1.0, service_rate=2.0, seed=42)
-    sim.run(termination_condition=policy, warmup=warmup, warmup_events=1000)
+    sim.run(termination_condition=policy)
     sim.report()
