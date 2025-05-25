@@ -143,7 +143,6 @@ class Simulator:
 
         self.schedule_initial_event()
 
-        print("Running simulation...")
         # Main simulation loop
         while not termination_condition(
             self.mm1_srv, self.scheduler, self.narr, self.ndep, self.abs_t
