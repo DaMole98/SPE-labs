@@ -216,6 +216,44 @@ Figure~\ref{fig:e2p2-corr} shows the average traversal time and the average queu
   }\label{fig:e2p2-corr}
 \end{figure}
 
+\subsection*{Using post-stratication over packets in the system at the time of arrival}
 
+The last estimator we implemented is based on post-stratification, where we group the traversal times by the number of packets in the system at the time of arrival (strata).
+
+After stratifying the packets, we compute the average traversal time for each stratum and the corresponding probability of being in that stratum: $\rho^k \cdot (1 - \rho)$, where $k$ is the number of packets in the system.
+Then we compute the weighted average of the traversal times, where the weights are the probabilities of being in each stratum. We must also take into account the tail of the distribution, so for the last stratum $k_{\text{max}}$ we use the probability of being in that stratum or higher, which is:
+
+\begin{equation}
+  P(X \geq k_{\text{max}}) = \sum_{k=k_{\text{max}}}^{\infty} P(X = k) = \sum_{k=k_{\text{max}}}^{\infty} \rho^k \cdot (1 - \rho) = (1 - \rho) \cdot \rho^{k_{\text{max}}} \cdot \sum_{k=0}^{\infty} \rho^k = (1 - \rho) \cdot \rho^{k_{\text{max}}} \cdot \frac{1}{1 - \rho} = \rho^{k_{\text{max}}}
+\end{equation}
+
+\subsection*{Results}
+
+In Figure~\ref{fig:e2p4} we show the results of the three estimators. We immediately notice the variance reduction of the in the histogram of the average traversal times (Figure~\ref{fig:e2p4-dist}). 
+The naive estimator is obviously the worst one, with a very high variance in comparison to the other two.
+The control variate estimator (Figure~\ref{fig:e2p4-res}) has a lower variance than the post-stratification estimator, but the latter provides a more precise estimate.
+
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[t]{0.8\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/ex2_p4_res.png}
+    \caption{
+      Average traversal time for the different estimators and 95\% confidence intervals.
+    }\label{fig:e2p4-res}
+  \end{subfigure}
+  \\
+  \begin{subfigure}[t]{\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/ex2_p4_dist.png}
+    \caption{
+      Histograms of the average traversal times of each replication.
+    }\label{fig:e2p4-dist}
+  \end{subfigure}
+  \caption{
+    Results of each average traversal time estimator.
+  }\label{fig:e2p4}
+\end{figure}
 
 \end{document}
