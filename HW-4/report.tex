@@ -133,7 +133,7 @@ The number of truncated time units was chosen for all combinations. This was not
   }\label{fig:e1p2-trunc-util}
 \end{figure}
 
-In Figure~\ref{fig:e1p2-compare} we compare the average utilization before and after truncation only for the stable settings ($\lambda < \mu$). It shows a very small difference between the two, even a slight degradation for $\lambda = 1.0$ and $\mu = 1.5$ whre higher frequency probably needed a smaller truncation period.
+In Figure~\ref{fig:e1p2-compare} we compare the average utilization before and after truncation only for the stable settings ($\lambda < \mu$). It shows a very small difference between the two, even a slight degradation for $\lambda = 1.0$ and $\mu = 1.5$ where higher frequency probably needed a smaller truncation period.
 
 Also, the impact of the truncation is very small because we used independent replications that decrease the impact of the warm-up period in the first place.
 
@@ -186,7 +186,7 @@ The naive estimator is simply the average of the traversal times of all packets 
 
 \subsection*{Using queue length as control variate}
 
-We used the averege queue length as control variate to decrease the variance of the estimator. The average queue length is computed as the weighted average of the queue length at each event, where the weight is the time elapsed since the last event.
+We used the average queue length as control variate to decrease the variance of the estimator. The average queue length is computed as the weighted average of the queue length at each event, where the weight is the time elapsed since the last event.
 
 We computed the linear regression between the average traversal time $T$ and the average queue length
 $L$ form each replication, obtaining the following model:
